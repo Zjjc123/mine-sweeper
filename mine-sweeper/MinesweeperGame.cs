@@ -13,7 +13,7 @@ namespace MineSweeper
         // public class constants
         internal const int ROWS = 10;
         internal const int COLS = 16;
-        internal const int BUTTON_SIZE = 25;
+        internal const int BUTTON_SIZE = 35;
         internal const int NUM_MINES = 20;
 
         // private class variables
