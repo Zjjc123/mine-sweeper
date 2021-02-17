@@ -1,5 +1,8 @@
 # Minesweeper
+
 By Jason Zhang (@Zjjc123)
+
+![Release](https://github.com/Zjjc123/mine-sweeper/workflows/Release/badge.svg)
 
 ## Screenshots
 <img src="https://github.com/Eastlake-High-School-Berrett/unit3-lesson7-programming-project-Zjjc123/blob/master/docs/game.png?raw=true" alt="game" width="300" height="300" />
