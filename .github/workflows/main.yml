@@ -1,4 +1,4 @@
-name: Win32 Release
+name: Release
 
 on:
   push:
