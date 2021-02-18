@@ -80,6 +80,7 @@ namespace MineSweeper
             int i = int.Parse(b.Name.Substring(0, index));
             int j = int.Parse(b.Name.Substring(index + 1));
 
+            // call different functions depending on the mouse button clicked
             switch (e.Button)
             {
                 case MouseButtons.Left:

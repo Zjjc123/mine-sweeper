@@ -9,25 +9,29 @@ namespace MineSweeper
 {
     public static class MinesweeperBoard
     {
+        // stores a matrix of game state
         public static MinesweeperGrid[,] grid;
 
+        // track if the game is over or not
         public static bool gameOver = false;
 
-        private static int r;
-        private static int c;
-        private static int m;
+        private static int _r;
+        private static int _c;
+        private static int _m;
 
-        public static void Initialize(int r_, int c_, int m_)
+        // initialize game board
+        public static void Initialize(int r, int c, int m)
         {
-            r = r_;
-            c = c_;
-            m = m_;
+            _r = r;
+            _c = c;
+            _m = m;
 
-            grid = new MinesweeperGrid[r, c];
+            grid = new MinesweeperGrid[_r, _c];
 
-            for (int i = 0; i < r; i++) 
+            // create an empty r by c matrix
+            for (int i = 0; i < _r; i++) 
             { 
-                for (int j = 0; j < c; j++)
+                for (int j = 0; j < _c; j++)
                 {
                     grid[i, j] = new MinesweeperGrid(false, 0);
                 }
@@ -38,16 +42,22 @@ namespace MineSweeper
 
         }
 
+        // handle clicks
         public static void Click(int i, int j)
         {
+            // disable if game over
             if (gameOver)
                 return;
 
+            // show grid
             Reveal(i, j);
+
+            // end the game if the grid is a mine
             if (grid[i, j].IsMine)
             {
                 EndGame(i, j);
             }
+            // if the grid is empty recursively show other empty and border number tiles
             else if (grid[i, j].Value == 0)
             {
                 RevealEmpties(i, j);
@@ -55,11 +65,13 @@ namespace MineSweeper
             CheckEnd();
         }
 
+        // handles right click (places flag)
         public static void RightClick(int i, int j)
         {
             if (gameOver)
                 return;
 
+            // if it is not clicked --> place a flag
             Button b = MinesweeperGame.GetButton(i, j);
             if (b.FlatStyle == FlatStyle.Popup)
             {
@@ -76,17 +88,20 @@ namespace MineSweeper
             }
         }
 
+
+        // generate mines randomly
         private static void GenerateMines()
         {
             Random random = new Random();
             // generate random mine
-            for (int i = 0; i < m; i++)
+            for (int i = 0; i < _m; i++)
             {
+                // ensures no repeats
                 MinesweeperGrid picked_grid;
                 do
                 {
-                    int mine_row = random.Next(r);
-                    int mine_column = random.Next(c);
+                    int mine_row = random.Next(_r);
+                    int mine_column = random.Next(_c);
 
                     picked_grid = grid[mine_row, mine_column];
                 } while (picked_grid.IsMine);
@@ -94,22 +109,24 @@ namespace MineSweeper
             }
         }
 
+        // generate number tiles
         private static void GenerateNumbers()
         {
             // generate number grids
-            for (int i = 0; i < r; i++)
+            for (int i = 0; i < _r; i++)
             {
-                for (int j = 0; j < c; j++)
+                for (int j = 0; j < _c; j++)
                 {
                     MinesweeperGrid picked_grid = grid[i, j];
                     if (!picked_grid.IsMine)
                     {
                         int count = 0;
                         // 3 x 3 scan but clamp max and min within array
-                        for (int k = Math.Max(0, i - 1); k < Math.Min(i + 2, r); k++)
+                        for (int k = Math.Max(0, i - 1); k < Math.Min(i + 2, _r); k++)
                         {
-                            for (int l = Math.Max(0, j - 1); l < Math.Min(j + 2, c); l++)
+                            for (int l = Math.Max(0, j - 1); l < Math.Min(j + 2, _c); l++)
                             {
+                                // count the total of adjacent mines
                                 if (grid[k, l].IsMine)
                                     count++;
                             }
@@ -120,6 +137,8 @@ namespace MineSweeper
             }
         }
 
+
+        // function to print the board to the console
         public static void DebugBoard()
         {
             for (int i = 0; i < grid.GetLength(0); i++)
@@ -143,17 +162,20 @@ namespace MineSweeper
             }
         }
 
+        // recursively reveal empty tiles
         private static void RevealEmpties(int i, int j)
         {
             MinesweeperGrid g = grid[i, j];
             Reveal(i, j);
 
+            // base case of number tile --> exit
             if (g.Value != 0)
                 return;
             
             // make sure recursion doesn't go back
             g.Value = -1;
 
+            // get adjacent tiles
             List<Tuple<int, int>> adjs = new List<Tuple<int, int>>();
             if (i > 0) {
                 MinesweeperGrid adj_g = grid[i - 1, j];
@@ -175,23 +197,28 @@ namespace MineSweeper
                 adjs.Add(new Tuple<int, int>(i, j + 1));
             }
 
+            // reveal each adjacent tiles
             foreach (Tuple<int, int> adj in adjs)
             {
                 RevealEmpties(adj.Item1, adj.Item2);
             }
         }
 
+        // reveal tiles based on tile state
         private static void Reveal(int i, int j)
         {
             MinesweeperGrid g = grid[i, j];
             Button b = MinesweeperGame.GetButton(i, j);
             b.FlatStyle = FlatStyle.Flat;
             b.BackColor = System.Drawing.Color.LightGray;
+
+            // show bomb if its a mine
             if (g.IsMine)
             {
                 b.Text = "\uD83D\uDCA3";
 
             }
+            // show number with colors
             else if (g.Value > 0)
             {
                 b.Text = g.Value.ToString();
@@ -220,9 +247,10 @@ namespace MineSweeper
             }
         }
 
-        // lose
+        // lost the game
         private static void EndGame(int i, int j)
         {
+            // reveal all mines
             Button b = MinesweeperGame.GetButton(i, j);
             for (int k = 0; k < grid.GetLength(0); k++)
             {
@@ -233,10 +261,12 @@ namespace MineSweeper
                 }
             }
             b.BackColor = System.Drawing.Color.Red;
+            // made dead face
             MinesweeperGame.Control_button.Text = "\u2620";
             gameOver = true;
         }
 
+        // check to see if the player has won
         private static void CheckEnd()
         {
             int count = 0;
@@ -249,15 +279,17 @@ namespace MineSweeper
                 }
             }
 
-            if (count == (r * c - m))
+            // if total opened equals the total - mines
+            if (count == (_r * _c - _m))
             {
                 EndGame();
             }
         }
 
-        // win
+        // handle win
         private static void EndGame()
         {
+            // reveal all mines and set them green
             for (int k = 0; k < grid.GetLength(0); k++)
             {
                 for (int l = 0; l < grid.GetLength(1); l++)
@@ -270,13 +302,17 @@ namespace MineSweeper
                     }
                 }
             }
+            // make cool face
             MinesweeperGame.Control_button.Text = "\uD83D\uDE0E";
             gameOver = true;
         }
 
+        // reset game
         public static void Reset()
         {
-            Initialize(r, c, m);
+            // reset board state
+            Initialize(_r, _c, _m);
+            // reset button styles
             for(int i = 0; i < grid.GetLength(0); i++)
             {
                 for (int j = 0; j < grid.GetLength(1); j++)
@@ -288,7 +324,9 @@ namespace MineSweeper
                     b.Text = String.Empty;
                 }
             }
+            // reset control face
             MinesweeperGame.Control_button.Text = "\uD83D\uDE42";
+            // enable control
             gameOver = false;
         }
     }

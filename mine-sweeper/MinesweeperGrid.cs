@@ -8,6 +8,7 @@ namespace MineSweeper
 {
     public class MinesweeperGrid
     {
+        // stores the value (number of adj. mines) and whether it is a mine or not
         private bool isMine;
         private int value;
 
