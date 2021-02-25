@@ -162,7 +162,7 @@ namespace MineSweeper
             }
         }
 
-        // recursively reveal empty tiles
+       // recursively reveal empty tiles
         private static void RevealEmpties(int i, int j)
         {
             MinesweeperGrid g = grid[i, j];
@@ -195,6 +195,26 @@ namespace MineSweeper
             {
                 MinesweeperGrid adj_g = grid[i, j + 1];
                 adjs.Add(new Tuple<int, int>(i, j + 1));
+            }
+            if (i > 0 && j > 0)
+            {
+                MinesweeperGrid adj_g = grid[i - 1, j - 1];
+                adjs.Add(new Tuple<int, int>(i - 1, j - 1));
+            }
+            if (i < grid.GetLength(0) - 1 && j > 0)
+            {
+                MinesweeperGrid adj_g = grid[i + 1, j - 1];
+                adjs.Add(new Tuple<int, int>(i + 1, j - 1));
+            }
+            if (i > 0 && j < grid.GetLength(1) - 1)
+            {
+                MinesweeperGrid adj_g = grid[i - 1, j + 1];
+                adjs.Add(new Tuple<int, int>(i - 1, j + 1));
+            }
+            if (i < grid.GetLength(0) - 1 && j < grid.GetLength(1) - 1)
+            {
+                MinesweeperGrid adj_g = grid[i + 1, j + 1];
+                adjs.Add(new Tuple<int, int>(i + 1, j + 1));
             }
 
             // reveal each adjacent tiles
